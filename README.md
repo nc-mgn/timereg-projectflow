@@ -1,6 +1,12 @@
 # Missing functionality
 - Multiple lines in timereg with the same PSP number will not be summized
-- There is no handling of differentiated hours 
+- There is no handling of differentiated hours
+
+- # Prerequisites 
+- Use Timereg as your primary tool.
+- You must "Star" your cases in ProjectFlow.
+- Your Timereg cases must include the PSP numbers from ProjectFlow.
+- After pressing the button it may appear that entries are missing, but in most cases pressing "Gem" will solve it.
 
 # How to install
 1. First install extension Tampermonkey (https://www.tampermonkey.net/) 
@@ -12,9 +18,3 @@
 1. Go to https://ufst.projectflow365.com
 1. A new button has appeared
   ![image](https://github.com/nc-mgn/timereg-projectflow/assets/30721123/8de19e70-1521-4c66-9ad7-edb2fc864101)
-
-# How to use
-- Use Timereg as your primary tool.
-- You must "Star" your cases in ProjectFlow.
-- Your Timereg cases must include the PSP numbers from ProjectFlow.
-- After pressing the button it may appear that entries are missing, but in most cases pressing "Gem" will solve it.
