@@ -1,21 +1,27 @@
 // ==UserScript==
-// @name      Fill projectflow from timereg
-// @include    https://ufst.projectflow365.com/*
-// @grant     GM_xmlhttpRequest
-// @connect   timereg.netcompany.com
-// @require   https://code.jquery.com/jquery-3.6.0.min.js
-// @require   https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
+// @name         Fill projectflow from timereg
+// @namespace    http://netcompany.com/
+// @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
+// @match        https://ufst.projectflow365.com/*
+// @grant        GM_xmlhttpRequest
+// @version      0.1
+// @connect      timereg.netcompany.com
+// @require      https://code.jquery.com/jquery-3.6.0.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=netcompany.com
 // ==/UserScript==
 
 window.addEventListener('load', function() {
     $("body").prepend ('<button id="gmCommDemo">Fill projectflow from timereg</button>');
 
     $("#gmCommDemo").click ( function () {
-        var week = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.TitleArea-module_titleArea_Xc9vN > span").innerText.substr(23,2);
-        var start_of_week = moment("2023W"+week).format("YYYY-MM-DD");
-        var end_of_week = moment("2023W"+week).add(6, 'days').format("YYYY-MM-DD");
-        console.log("Got week " + week);
-        console.log("Start: " + start_of_week + " - End: " + end_of_week);
+        var year_week = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText;
+        var year = year_week.substr(7,4);
+        var week = year_week.substr(4,2);
+        var start_of_week = moment(year+"W"+week).format("YYYY-MM-DD");
+        var end_of_week = moment(year+"W"+week).add(6, 'days').format("YYYY-MM-DD");
+        //console.log("Got week " + week);
+        //console.log("Start: " + start_of_week + " - End: " + end_of_week);
         var fetchUrl = "https://timereg.netcompany.com/api/Registration/GetRegistrations?startDate="+start_of_week+"&endDate="+end_of_week;
         var responseJson;
         var projectFlowPsps = [];
@@ -27,6 +33,7 @@ window.addEventListener('load', function() {
                 console.log(responseDetails.responseText);
                 if(responseJson.Message == "Authorization has been denied for this request."){
                     alert("Missing Authorization. Login to Timereg in another tab");
+                    insertedSomething = true;
                 }
                 var table = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table")
                 var rowLength = table.rows.length;
@@ -43,11 +50,11 @@ window.addEventListener('load', function() {
                                     var previousCell;
                                     jQuery.each(registrations.Registrations, function(x, registration) {
                                         if(registration.Hours > 0){
-                                            console.log("registration=" + registration);
-                                            console.log("pspCell " + projectFlowPsp);
+                                            //console.log("registration=" + registration);
+                                            //console.log("pspCell " + projectFlowPsp);
                                             var cell = row.cells[cellDayStartIndex];
                                             //console.log("cellDayStartIndex=" + cellDayStartIndex);
-                                            console.log("Setting: " + delievery.DeliveryName + " " + caseRegistration.CaseTitle + " " + registrations.Date + " " + registration.Hours);
+                                            //console.log("Setting: " + delievery.DeliveryName + " " + caseRegistration.CaseTitle + " " + registrations.Date + " " + registration.Hours);
                                             //cell.click(function(e){ console.log( e ) } );
                                             cell.focus();
                                             cell.click();
@@ -59,33 +66,21 @@ window.addEventListener('load', function() {
                                                 //view: window,
                                                 bubbles: true
                                             });
-
-
                                             cell.lastChild.firstChild.firstChild.value = registration.Hours;
                                             cell.lastChild.firstChild.firstChild.dispatchEvent(keyboardEvent);
                                             insertedSomething = true;
-
                                         }
                                     });
                                     cellDayStartIndex+=1;
                                 });
                             }
+                        });
                     });
-                });
                 }
-                console.log(projectFlowPsps);
-                console.log (
-                    "GM_xmlhttpRequest() response is:\n",
-                    responseJson.RegistrationsGroups
-                );
                 if(!insertedSomething){
                     alert("Nothing was inserted, did you register anything during Week " + week + "?");
                 }
-
             }
-
         } );
-
-        console.log ("Posting message");
     } );
 });
