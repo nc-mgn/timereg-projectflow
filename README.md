@@ -2,7 +2,7 @@
 - Multiple lines in timereg with the same PSP number will not be summized
 - There is no handling of differentiated hours
 
-- # Prerequisites 
+# Prerequisites 
 - Use Timereg as your primary tool.
 - You must "Star" your cases in ProjectFlow.
 - Your Timereg cases must include the PSP numbers from ProjectFlow.
