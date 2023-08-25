@@ -17,4 +17,4 @@
 1. Press Install
 1. Go to https://ufst.projectflow365.com
 1. A new button has appeared
-  ![image](https://github.com/nc-mgn/timereg-projectflow/assets/30721123/8de19e70-1521-4c66-9ad7-edb2fc864101)
+  ![image](https://github.com/nc-mgn/timereg-projectflow/assets/30721123/c808b1f9-ef2a-4c3d-8c50-3a4ba7c1bd70)
