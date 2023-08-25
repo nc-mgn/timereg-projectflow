@@ -34,7 +34,7 @@ function waitForElm(selector) {
 function startWait() {
     waitForElm('.pfx-weeksheet .body-227 .root-228 .primarySet-209').then((elm) => {
         $('.pfx-weeksheet .body-227 .root-228 .primarySet-209')
-            .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button ms-Button--commandBar ms-CommandBarItem-link root-234" tabindex="0">Fill projectflow from timereg</button></div>');
+            .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button ms-Button--commandBar ms-CommandBarItem-link root-234" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
 
         $("#gmCommDemo").click ( function () {
             var year_week = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText;
