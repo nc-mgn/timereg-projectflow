@@ -34,15 +34,23 @@ function waitForElm(selector) {
 async function handleRollId() {
     var rollIdDropdown = document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div > div > div > div").firstChild.firstChild;
 
-    var isAlreadySelected = false;
+    let isAlreadySelected = false;
     try {
         console.log(rollIdDropdown.firstChild.firstChild)
-        isAlreadySelecte = drollIdDropdown.firstChild.firstChild.tagName.toLowerCase() == 'span';
+        console.log(rollIdDropdown.firstChild.firstChild != null);
+        isAlreadySelected = rollIdDropdown.firstChild.firstChild != null;
     }catch(e){
-        //Is already selected
+        //Fallthrough
+    }
+    
+    if(isAlreadySelected){
+        console.log("is true")
     }
 
     if (!isAlreadySelected) {
+        console.log("not true")
+    }
+    if (isAlreadySelected != true) {
         rollIdDropdown.lastChild.click();
         var dropdownList = rollIdDropdown.parentNode.children.item(1).firstChild.firstChild.lastChild.getElementsByTagName("li");;
         while(dropdownList.length == 0){
@@ -54,6 +62,8 @@ async function handleRollId() {
                 break;
             }
         }
+    } else {
+        await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button")
     }
 
     var saveButton = document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button")
