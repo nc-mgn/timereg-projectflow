@@ -33,18 +33,26 @@ function waitForElm(selector) {
 
 async function handleRollId() {
     var rollIdDropdown = document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div > div > div > div").firstChild.firstChild;
-    console.log(rollIdDropdown);
-    rollIdDropdown.lastChild.click();
-    var dropdownList = rollIdDropdown.parentNode.children.item(1).firstChild.firstChild.lastChild.getElementsByTagName("li");;
-    console.log(dropdownList)
-    while(dropdownList.length == 0){
-        await new Promise(r => setTimeout(r, 100));
+
+    var isAlreadySelected = false;
+    try {
+        console.log(rollIdDropdown.firstChild.firstChild)
+        isAlreadySelecte = drollIdDropdown.firstChild.firstChild.tagName.toLowerCase() == 'span';
+    }catch(e){
+        //Is already selected
     }
-    for (var i = 0; i < dropdownList.length; i++) {
-        if (dropdownList[i].getAttribute('data-value') == '23015779112A') {
-            dropdownList[i].click();
-            console.log("Found correct id");
-            break;
+
+    if (!isAlreadySelected) {
+        rollIdDropdown.lastChild.click();
+        var dropdownList = rollIdDropdown.parentNode.children.item(1).firstChild.firstChild.lastChild.getElementsByTagName("li");;
+        while(dropdownList.length == 0){
+            await new Promise(r => setTimeout(r, 100));
+        }
+        for (var i = 0; i < dropdownList.length; i++) {
+            if (dropdownList[i].getAttribute('data-value') == '23015779112A') {
+                dropdownList[i].click();
+                break;
+            }
         }
     }
 
@@ -128,7 +136,6 @@ async function startWait() {
                                     cell.lastChild.firstChild.firstChild.focus()
                                     await new Promise(r => setTimeout(r, 100));
                                     var detailsButton = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1)").firstChild;
-                                    console.log(detailsButton);
                                     let evt = new MouseEvent("click", {
                                         bubbles: true,
                                         cancelable: false,
