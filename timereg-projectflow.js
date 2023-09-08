@@ -4,7 +4,7 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://ufst.projectflow365.com/*
 // @grant        GM_xmlhttpRequest
-// @version      0.3 - Kontraktroll Id
+// @version      0.3 - Kontraktrolle Id
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
@@ -57,7 +57,7 @@ async function handleRollId() {
             await new Promise(r => setTimeout(r, 100));
         }
         for (var i = 0; i < dropdownList.length; i++) {
-            if (dropdownList[i].getAttribute('data-value') == '23015779112A') {
+            if (dropdownList[i].getAttribute('data-value').includes('A')) {
                 dropdownList[i].click();
                 break;
             }
