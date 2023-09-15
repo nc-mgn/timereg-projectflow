@@ -43,13 +43,6 @@ async function handleRollId() {
         //Fallthrough
     }
 
-    if(isAlreadySelected){
-        console.log("is true")
-    }
-
-    if (!isAlreadySelected) {
-        console.log("not true")
-    }
     if (isAlreadySelected != true) {
         rollIdDropdown.lastChild.click();
         var dropdownList = rollIdDropdown.parentNode.children.item(1).firstChild.firstChild.lastChild.getElementsByTagName("li");;
@@ -144,7 +137,7 @@ async function startWait() {
                                     cell.click();
                                     cell.lastChild.firstChild.firstChild.focus()
                                     await new Promise(r => setTimeout(r, 100));
-                                    var detailsButton = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1)").firstChild;
+                                    let detailsButton = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1)").firstChild;
                                     let evt = new MouseEvent("click", {
                                         bubbles: true,
                                         cancelable: false,
