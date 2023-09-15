@@ -111,43 +111,50 @@ async function startWait() {
                         var cellDayStartIndex = 7;
 
                         for (let registrations of caseRegistration.Registrations) {
-                            for (let registration of registrations.Registrations) {
-                                if (registration.Hours > 0) {
-                                    var cell = row.cells[cellDayStartIndex];
+                            let allRegistrations = []
+                            for (let i = 0; i < registrations.Registrations.length; i++) {
+                                allRegistrations[i] = registrations.Registrations[i].Hours;
+                            }
 
-                                    cell.focus();
-                                    cell.click();
+                            let hourSum = allRegistrations.reduce(function(a,b){
+                                return a+b;
+                            });
 
-                                    const keyboardEvent = new KeyboardEvent('keydown', {
-                                        code: 'Enter',
-                                        key: 'Enter',
-                                        charCode: 13,
-                                        keyCode: 13,
-                                        bubbles: true,
-                                    });
+                            if (hourSum > 0) {
+                                var cell = row.cells[cellDayStartIndex];
 
-                                    cell.lastChild.firstChild.firstChild.value = registration.Hours;
-                                    cell.lastChild.firstChild.firstChild.dispatchEvent(keyboardEvent);
-                                    insertedSomething = true;
+                                cell.focus();
+                                cell.click();
 
-                                    cell.focus();
-                                    cell.click();
-                                    cell.lastChild.firstChild.firstChild.focus()
-                                    await new Promise(r => setTimeout(r, 100));
-                                    let detailsButton = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1)").firstChild;
-                                    let evt = new MouseEvent("click", {
-                                        bubbles: true,
-                                        cancelable: false,
-                                      });
-                                      let evt2 = new MouseEvent("mousedown", {
-                                        bubbles: true,
-                                        cancelable: true,
-                                      });
-                                    detailsButton.dispatchEvent(evt);
-                                    detailsButton.dispatchEvent(evt2);
-                                    await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div");
-                                    await handleRollId();
-                                }
+                                const keyboardEvent = new KeyboardEvent('keydown', {
+                                    code: 'Enter',
+                                    key: 'Enter',
+                                    charCode: 13,
+                                    keyCode: 13,
+                                    bubbles: true,
+                                });
+
+                                cell.lastChild.firstChild.firstChild.value = hourSum;
+                                cell.lastChild.firstChild.firstChild.dispatchEvent(keyboardEvent);
+                                insertedSomething = true;
+
+                                cell.focus();
+                                cell.click();
+                                cell.lastChild.firstChild.firstChild.focus()
+                                await new Promise(r => setTimeout(r, 100));
+                                let detailsButton = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1)").firstChild;
+                                let evt = new MouseEvent("click", {
+                                    bubbles: true,
+                                    cancelable: false,
+                                });
+                                let evt2 = new MouseEvent("mousedown", {
+                                    bubbles: true,
+                                    cancelable: true,
+                                });
+                                detailsButton.dispatchEvent(evt);
+                                detailsButton.dispatchEvent(evt2);
+                                await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div");
+                                await handleRollId();
                             }
                             cellDayStartIndex += 1;
                         }
