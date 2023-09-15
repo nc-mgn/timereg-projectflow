@@ -17,7 +17,7 @@ function waitForElm(selector) {
             return resolve(document.querySelector(selector));
         }
 
-        const observer = new MutationObserver(mutations => {
+        const observer = new MutationObserver(() => {
             if (document.querySelector(selector)) {
                 resolve(document.querySelector(selector));
                 observer.disconnect();
@@ -45,7 +45,7 @@ async function handleRollId() {
 
     if (isAlreadySelected != true) {
         rollIdDropdown.lastChild.click();
-        var dropdownList = rollIdDropdown.parentNode.children.item(1).firstChild.firstChild.lastChild.getElementsByTagName("li");;
+        let dropdownList = rollIdDropdown.parentNode.children.item(1).firstChild.firstChild.lastChild.getElementsByTagName("li");;
         while(dropdownList.length == 0){
             await new Promise(r => setTimeout(r, 100));
         }
@@ -72,15 +72,12 @@ async function startWait() {
         .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button ms-Button--commandBar ms-CommandBarItem-link root-234" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
 
     $("#gmCommDemo").click(async function () {
-        var year_week = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText;
-        var year = year_week.substr(7, 4);
-        var week = year_week.substr(4, 2);
-        var start_of_week = moment(year + "W" + week).format("YYYY-MM-DD");
-        var end_of_week = moment(year + "W" + week).add(6, 'days').format("YYYY-MM-DD");
-
-        var fetchUrl = "https://timereg.netcompany.com/api/Registration/GetRegistrations?startDate=" + start_of_week + "&endDate=" + end_of_week;
-        var responseJson;
-        var projectFlowPsps = [];
+        let year_week = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText,
+            year = year_week.substr(7, 4), week = year_week.substr(4, 2),
+            start_of_week = moment(year + "W" + week).format("YYYY-MM-DD"),
+            end_of_week = moment(year + "W" + week).add(6, 'days').format("YYYY-MM-DD"),
+            fetchUrl = "https://timereg.netcompany.com/api/Registration/GetRegistrations?startDate=" + start_of_week + "&endDate=" + end_of_week,
+            responseJson, projectFlowPsps = [];
 
         const responseDetails = await new Promise((resolve) => {
             GM_xmlhttpRequest({
