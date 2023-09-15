@@ -32,7 +32,7 @@ function waitForElm(selector) {
 }
 
 async function handleRollId() {
-    var rollIdDropdown = document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div > div > div > div").firstChild.firstChild;
+    let rollIdDropdown = document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div > div > div > div").firstChild.firstChild;
 
     let isAlreadySelected = false;
     try {
@@ -56,9 +56,9 @@ async function handleRollId() {
         while(dropdownList.length == 0){
             await new Promise(r => setTimeout(r, 100));
         }
-        for (var i = 0; i < dropdownList.length; i++) {
-            if (dropdownList[i].getAttribute('data-value').includes('A')) {
-                dropdownList[i].click();
+        for (const element of dropdownList) {
+            if (element.getAttribute('data-value').includes('A')) {
+                element.click();
                 break;
             }
         }
@@ -66,7 +66,7 @@ async function handleRollId() {
         await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button")
     }
 
-    var saveButton = document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button")
+    let saveButton = document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button")
     saveButton.click();
     while (document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div > div > div > div") != null){
         await new Promise(r => setTimeout(r, 100));
@@ -101,15 +101,14 @@ async function startWait() {
 
         responseJson = JSON.parse(responseDetails.responseText);
         console.log(responseDetails.responseText);
+        var insertedSomething = false;
 
         if (responseJson.Message == "Authorization has been denied for this request.") {
             alert("Missing Authorization. Login to Timereg in another tab");
-            insertedSomething = true;
         }
 
         var table = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table");
         var rowLength = table.rows.length;
-        var insertedSomething = false;
 
         // We don't care about the first rows, nor the last summing rows
         for (var i = 3; i < rowLength - 3; i += 1) {
