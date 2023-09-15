@@ -4,7 +4,7 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://ufst.projectflow365.com/*
 // @grant        GM_xmlhttpRequest
-// @version      0.3 - Autosave
+// @version      0.3.1 - Autosave
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
@@ -102,7 +102,9 @@ function startWait() {
                     if(!insertedSomething){
                         alert("Nothing was inserted, did you register anything during Week " + week + "?");
                     } else {
-                         document.querySelector("#id__155").click()
+                        setTimeout(function() {
+                            document.querySelector("#id__155").click()
+                        }, 1000);
                     }
                 }
             } );
