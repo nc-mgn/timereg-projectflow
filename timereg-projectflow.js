@@ -4,7 +4,7 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://ufst.projectflow365.com/*
 // @grant        GM_xmlhttpRequest
-// @version      0.3 - Kontraktrolle Id
+// @version      0.4 - Kontraktrolle Id
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
@@ -42,7 +42,7 @@ async function handleRollId() {
     }catch(e){
         //Fallthrough
     }
-    
+
     if(isAlreadySelected){
         console.log("is true")
     }
@@ -125,7 +125,7 @@ async function startWait() {
                             for (let registration of registrations.Registrations) {
                                 if (registration.Hours > 0) {
                                     var cell = row.cells[cellDayStartIndex];
-                                    
+
                                     cell.focus();
                                     cell.click();
 
@@ -169,6 +169,8 @@ async function startWait() {
 
         if (!insertedSomething) {
             alert("Nothing was inserted, did you register anything during Week " + week + "?");
+        } else {
+            document.querySelector("#id__155").click()
         }
     });
 }
