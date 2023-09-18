@@ -166,7 +166,9 @@ async function startWait() {
         if (!insertedSomething) {
             alert("Nothing was inserted, did you register anything during Week " + week + "?");
         } else {
-            document.querySelector("#id__155").click()
+            setTimeout(function() {
+                document.querySelector("#id__155").click()
+            }, 1000);
         }
     });
 }
