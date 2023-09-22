@@ -4,12 +4,46 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://ufst.projectflow365.com/*
 // @grant        GM_xmlhttpRequest
-// @version      0.4 - Kontraktrolle Id
+// @version      0.5 - Autofill All surcharge groups
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=netcompany.com
 // ==/UserScript==
+
+
+
+let saveButtonSelector = "#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button";
+let detailsButtonSelector = "#id__176";
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+
+const rolleIdDropdownSelectorN = function (n) {
+    let childNum = 5;
+    switch (n) {
+        case 0:
+            break;
+        case 1:
+            childNum = childNum + 1;
+            break;
+        default:
+            childNum = childNum + 1 + (2 * (n - 1));
+    }
+    return `#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(${childNum}) > div > div > div > div > div`;
+}
+
+const rolleIdHoursDropdownSelectorN = function (n) {
+    let childNum = 7;
+    switch (n) {
+        case 0:
+            console.error("rollIdHours 0 does not exist");
+            break;
+        case 1:
+            break;
+        default:
+            childNum = childNum + (2 * (n - 1));
+    }
+    return `#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(${childNum}) > div > div > div > div`;
+}
 
 function waitForElm(selector) {
     return new Promise(resolve => {
@@ -31,37 +65,64 @@ function waitForElm(selector) {
     });
 }
 
-async function handleRollId() {
-    let rollIdDropdown = document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div > div > div > div").firstChild.firstChild;
+async function handleRolleIdDropdownAndHours(hours, numRollId) {
+    console.log(`Called handleRollId with ${hours} hours and ${numRollId} nummrollid`);
+    let rollIdDropdown = document.querySelector(rolleIdDropdownSelectorN(numRollId)).firstChild.firstChild;
 
     let isAlreadySelected = false;
-    try {
-        console.log(rollIdDropdown.firstChild.firstChild)
-        console.log(rollIdDropdown.firstChild.firstChild != null);
-        isAlreadySelected = rollIdDropdown.firstChild.firstChild != null;
-    }catch(e){
-        //Fallthrough
+    isAlreadySelected = rollIdDropdown.firstChild.firstChild != null;
+
+    if (isAlreadySelected) {
+        let selectedOptionRemoveButton = rollIdDropdown.firstChild.children.item(1).querySelector(".fa.fa-times");
+        selectedOptionRemoveButton.click();
+        await sleep(1000);
     }
 
-    if (isAlreadySelected != true) {
-        rollIdDropdown.lastChild.click();
-        let dropdownList = rollIdDropdown.parentNode.children.item(1).firstChild.firstChild.lastChild.getElementsByTagName("li");;
-        while(dropdownList.length == 0){
-            await new Promise(r => setTimeout(r, 100));
-        }
-        for (const element of dropdownList) {
-            if (element.getAttribute('data-value').includes('A')) {
-                element.click();
-                break;
-            }
-        }
-    } else {
-        await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button")
+    if(numRollId > 0) {
+        let hoursField = document.querySelector(rolleIdHoursDropdownSelectorN(numRollId)).firstChild.firstChild;
+        hoursField.focus();
+        hoursField.click();
+        await sleep(100);
+        hoursField.value = hours;
+        const keyboardEvent = new KeyboardEvent('keydown', {
+            code: 'Enter',
+            key: 'Enter',
+            charCode: 13,
+            keyCode: 13,
+            bubbles: true,
+        });
+        document.body.dispatchEvent(keyboardEvent);
+        //hoursField.parentNode.setAttribute("data-dirty", true);
+        await sleep(500);
     }
 
-    let saveButton = document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button")
+    rollIdDropdown.lastChild.click();
+    let dropdownList = rollIdDropdown.parentNode.children.item(1).firstChild.firstChild.lastChild.getElementsByTagName("li");
+    while(dropdownList.length == 0) {
+        await sleep(100);
+    }
+    const element = dropdownList[numRollId]
+    element.click();
+    await sleep(100);
+}
+
+const numberToKeyIdZeroToNine = (number) => 48 + number;
+
+async function handleRollId(allRegistrations) {
+    const sumOfRegistrations = allRegistrations.reduce((a, b) => a + b);
+    let currentRollId = 0;
+    let currentSumOfRegistrations = 0;
+
+    while(currentSumOfRegistrations < sumOfRegistrations) {
+        await handleRolleIdDropdownAndHours(allRegistrations[currentRollId], currentRollId);
+        currentSumOfRegistrations += allRegistrations[currentRollId];
+        currentRollId += 1;
+    }
+
+    await waitForElm(saveButtonSelector)
+    let saveButton = document.querySelector(saveButtonSelector);
     saveButton.click();
-    while (document.querySelector("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div > div > div > div") != null){
+    while (document.querySelector(rolleIdDropdownSelectorN(0)) != null){
         await new Promise(r => setTimeout(r, 100));
     }
 }
@@ -116,9 +177,7 @@ async function startWait() {
                                 allRegistrations[i] = registrations.Registrations[i].Hours;
                             }
 
-                            let hourSum = allRegistrations.reduce(function(a,b){
-                                return a+b;
-                            });
+                            let hourSum = allRegistrations.reduce((a, b) => a + b);
 
                             if (hourSum > 0) {
                                 var cell = row.cells[cellDayStartIndex];
@@ -142,7 +201,7 @@ async function startWait() {
                                 cell.click();
                                 cell.lastChild.firstChild.firstChild.focus()
                                 await new Promise(r => setTimeout(r, 100));
-                                let detailsButton = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1)").firstChild;
+                                let detailsButton = document.querySelector(detailsButtonSelector).firstChild;
                                 let evt = new MouseEvent("click", {
                                     bubbles: true,
                                     cancelable: false,
@@ -154,7 +213,7 @@ async function startWait() {
                                 detailsButton.dispatchEvent(evt);
                                 detailsButton.dispatchEvent(evt2);
                                 await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div");
-                                await handleRollId();
+                                await handleRollId(allRegistrations);
                             }
                             cellDayStartIndex += 1;
                         }
