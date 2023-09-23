@@ -12,7 +12,6 @@
 // ==/UserScript==
 
 
-
 let saveButtonSelector = "#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button";
 let detailsButtonSelector = "#id__176";
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
@@ -78,7 +77,7 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
         await sleep(1000);
     }
 
-    if(numRollId > 0) {
+    if (numRollId > 0) {
         let hoursField = document.querySelector(rolleIdHoursDropdownSelectorN(numRollId)).firstChild.firstChild;
         hoursField.focus();
         hoursField.click();
@@ -98,7 +97,7 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
 
     rollIdDropdown.lastChild.click();
     let dropdownList = rollIdDropdown.parentNode.children.item(1).firstChild.firstChild.lastChild.getElementsByTagName("li");
-    while(dropdownList.length == 0) {
+    while (dropdownList.length == 0) {
         await sleep(100);
     }
     const element = dropdownList[numRollId]
@@ -111,7 +110,7 @@ async function handleRollId(allRegistrations) {
     let currentRollId = 0;
     let currentSumOfRegistrations = 0;
 
-    while(currentSumOfRegistrations < sumOfRegistrations) {
+    while (currentSumOfRegistrations < sumOfRegistrations) {
         await handleRolleIdDropdownAndHours(allRegistrations[currentRollId], currentRollId);
         currentSumOfRegistrations += allRegistrations[currentRollId];
         currentRollId += 1;
@@ -120,7 +119,7 @@ async function handleRollId(allRegistrations) {
     await waitForElm(saveButtonSelector)
     let saveButton = document.querySelector(saveButtonSelector);
     saveButton.click();
-    while (document.querySelector(rolleIdDropdownSelectorN(0)) != null){
+    while (document.querySelector(rolleIdDropdownSelectorN(0)) != null) {
         await new Promise(r => setTimeout(r, 100));
     }
 }
