@@ -1,12 +1,12 @@
-#### Missing functionality
-- Multiple lines in timereg with the same PSP number will not be summized
-- There is no handling of differentiated hours
-
 #### Prerequisites 
 - Use Timereg as your primary tool.
 - You must "Star" your cases in ProjectFlow.
 - Your Timereg cases must include the PSP numbers from ProjectFlow.
 - After pressing the button it may appear that entries are missing, but in most cases pressing "Gem" will solve it.
+- If you have multiple Kontraktrolle id's, it is assumed that there is a well-defined mapping between timereg and project flow where the top one in timereg corresponds to the top one in projectflow, etc
+
+![image](https://github.com/rasser900/timereg-projectflow/assets/15357249/c6483828-61de-4416-8779-0185c0184da8)
+
 
 # How to install
 1. First install extension Tampermonkey (https://www.tampermonkey.net/) 
