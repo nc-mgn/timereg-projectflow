@@ -106,8 +106,6 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
     await sleep(100);
 }
 
-const numberToKeyIdZeroToNine = (number) => 48 + number;
-
 async function handleRollId(allRegistrations) {
     const sumOfRegistrations = allRegistrations.reduce((a, b) => a + b);
     let currentRollId = 0;
@@ -177,7 +175,8 @@ async function startWait() {
                                 allRegistrations[i] = registrations.Registrations[i].Hours;
                             }
 
-                            let hourSum = allRegistrations.reduce((a, b) => a + b);
+                            let hasMoreRollIds = allRegistrations.length > 1;
+                            let hourSum = hasMoreRollIds ? allRegistrations.reduce((a, b) => a + b) : allRegistrations[0];
 
                             if (hourSum > 0) {
                                 var cell = row.cells[cellDayStartIndex];
@@ -197,23 +196,25 @@ async function startWait() {
                                 cell.lastChild.firstChild.firstChild.dispatchEvent(keyboardEvent);
                                 insertedSomething = true;
 
-                                cell.focus();
-                                cell.click();
-                                cell.lastChild.firstChild.firstChild.focus()
-                                await new Promise(r => setTimeout(r, 100));
-                                let detailsButton = document.querySelector(detailsButtonSelector).firstChild;
-                                let evt = new MouseEvent("click", {
-                                    bubbles: true,
-                                    cancelable: false,
-                                });
-                                let evt2 = new MouseEvent("mousedown", {
-                                    bubbles: true,
-                                    cancelable: true,
-                                });
-                                detailsButton.dispatchEvent(evt);
-                                detailsButton.dispatchEvent(evt2);
-                                await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div");
-                                await handleRollId(allRegistrations);
+                                if (hasMoreRollIds) {
+                                    cell.focus();
+                                    cell.click();
+                                    cell.lastChild.firstChild.firstChild.focus()
+                                    await new Promise(r => setTimeout(r, 100));
+                                    let detailsButton = document.querySelector(detailsButtonSelector).firstChild;
+                                    let evt = new MouseEvent("click", {
+                                        bubbles: true,
+                                        cancelable: false,
+                                    });
+                                    let evt2 = new MouseEvent("mousedown", {
+                                        bubbles: true,
+                                        cancelable: true,
+                                    });
+                                    detailsButton.dispatchEvent(evt);
+                                    detailsButton.dispatchEvent(evt2);
+                                    await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div");
+                                    await handleRollId(allRegistrations);
+                                }
                             }
                             cellDayStartIndex += 1;
                         }
