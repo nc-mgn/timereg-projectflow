@@ -13,7 +13,7 @@
 
 
 let saveButtonSelector = "#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button";
-let detailsButtonSelector = "#id__176";
+let detailsButtonSelector = "#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1) > button";
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
 const rolleIdDropdownSelectorN = function (n) {
