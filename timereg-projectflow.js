@@ -4,7 +4,7 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://ufst.projectflow365.com/*
 // @grant        GM_xmlhttpRequest
-// @version      0.5.1 - Autofill All surcharge groups
+// @version      0.5.2 - Autofill All surcharge groups
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
@@ -200,7 +200,7 @@ async function startWait() {
                                     cell.click();
                                     cell.lastChild.firstChild.firstChild.focus()
                                     await new Promise(r => setTimeout(r, 100));
-                                    let detailsButton = document.querySelector(detailsButtonSelector).firstChild;
+                                    let detailsButton = document.querySelector(detailsButtonSelector);
                                     let evt = new MouseEvent("click", {
                                         bubbles: true,
                                         cancelable: false,
