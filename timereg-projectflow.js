@@ -4,7 +4,7 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://ufst.projectflow365.com/*
 // @grant        GM_xmlhttpRequest
-// @version      0.5.2 - Autofill All surcharge groups
+// @version      0.5.3 - Autofill All surcharge groups
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
@@ -34,8 +34,7 @@ const rolleIdHoursDropdownSelectorN = function (n) {
     let childNum = 7;
     switch (n) {
         case 0:
-            console.error("rollIdHours 0 does not exist");
-            break;
+            throw new Error("rollIdHours 0 does not exist");
         case 1:
             break;
         default:
@@ -74,7 +73,7 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
     if (isAlreadySelected) {
         let selectedOptionRemoveButton = rollIdDropdown.firstChild.children.item(1).querySelector(".fa.fa-times");
         selectedOptionRemoveButton.click();
-        await sleep(1000);
+        await sleep(200);
     }
 
     if (numRollId > 0) {
@@ -91,7 +90,6 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
             bubbles: true,
         });
         document.body.dispatchEvent(keyboardEvent);
-        //hoursField.parentNode.setAttribute("data-dirty", true);
         await sleep(500);
     }
 
@@ -105,7 +103,29 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
     await sleep(100);
 }
 
-async function handleRollId(allRegistrations) {
+async function testIfWindowHasRollIdDropdown() {
+    await waitForElm(saveButtonSelector)
+    let dropdown = document.querySelector(rolleIdDropdownSelectorN(0));
+    if (dropdown == null) {
+        return false;
+    }
+    try {
+        let test = dropdown.firstChild.firstChild;
+    } catch(e){
+        //Is not the expected node
+        return false;
+    }
+    return true;
+}
+
+async function handleRollId(allRegistrations, isFirstIterationInRow) {
+
+    if (isFirstIterationInRow) {
+        let hasRollIds = await testIfWindowHasRollIdDropdown();
+        if (!hasRollIds) {
+            return false;
+        }
+    }
     const sumOfRegistrations = allRegistrations.reduce((a, b) => a + b);
     let currentRollId = 0;
     let currentSumOfRegistrations = 0;
@@ -122,6 +142,7 @@ async function handleRollId(allRegistrations) {
     while (document.querySelector(rolleIdDropdownSelectorN(0)) != null) {
         await new Promise(r => setTimeout(r, 100));
     }
+    return true;
 }
 
 async function startWait() {
@@ -157,7 +178,7 @@ async function startWait() {
 
         var table = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table");
         var rowLength = table.rows.length;
-
+        let deliveryHasMultipleRollIdsMap = new Map();
         // We don't care about the first rows, nor the last summing rows
         for (var i = 3; i < rowLength - 3; i += 1) {
             var row = table.rows[i];
@@ -167,15 +188,15 @@ async function startWait() {
                 for (let caseRegistration of delievery.CaseRegistrations) {
                     if (caseRegistration.CaseTitle.includes(projectFlowPsp)) {
                         var cellDayStartIndex = 7;
-
+                        let firstIteration = true;
                         for (let registrations of caseRegistration.Registrations) {
                             let allRegistrations = []
                             for (let i = 0; i < registrations.Registrations.length; i++) {
                                 allRegistrations[i] = registrations.Registrations[i].Hours;
                             }
 
-                            let hasMoreRollIds = allRegistrations.length > 1;
-                            let hourSum = hasMoreRollIds ? allRegistrations.reduce((a, b) => a + b) : allRegistrations[0];
+                            let hasMoreRollIdsInTimereg = allRegistrations.length > 1;
+                            let hourSum = hasMoreRollIdsInTimereg ? allRegistrations.reduce((a, b) => a + b) : allRegistrations[0];
 
                             if (hourSum > 0) {
                                 var cell = row.cells[cellDayStartIndex];
@@ -195,7 +216,7 @@ async function startWait() {
                                 cell.lastChild.firstChild.firstChild.dispatchEvent(keyboardEvent);
                                 insertedSomething = true;
 
-                                if (hasMoreRollIds) {
+                                if (hasMoreRollIdsInTimereg && (firstIteration || deliveryHasMultipleRollIdsMap.get(caseRegistration.CaseTitle))) {
                                     cell.focus();
                                     cell.click();
                                     cell.lastChild.firstChild.firstChild.focus()
@@ -212,7 +233,11 @@ async function startWait() {
                                     detailsButton.dispatchEvent(evt);
                                     detailsButton.dispatchEvent(evt2);
                                     await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div");
-                                    await handleRollId(allRegistrations);
+                                    let hasRollId = await handleRollId(allRegistrations, firstIteration);
+                                    if (firstIteration) {
+                                        deliveryHasMultipleRollIdsMap.set(caseRegistration.CaseTitle, hasRollId);
+                                        firstIteration = false;
+                                    }
                                 }
                             }
                             cellDayStartIndex += 1;
