@@ -119,6 +119,12 @@ async function handleRollId(allRegistrations, isFirstIterationInRow) {
     if (isFirstIterationInRow) {
         let hasRollIds = await testIfWindowHasRollIdDropdown();
         if (!hasRollIds) {
+            await waitForElm(saveButtonSelector)
+            let saveButton = document.querySelector(saveButtonSelector);
+            saveButton.click();
+            while (document.querySelector(saveButtonSelector) != null) {
+                await new Promise(r => setTimeout(r, 100));
+            }
             return false;
         }
     }
