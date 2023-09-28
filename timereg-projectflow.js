@@ -105,12 +105,8 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
 
 async function testIfWindowHasRollIdDropdown() {
     await waitForElm(saveButtonSelector)
-    let dropdown = document.querySelector(rolleIdDropdownSelectorN(0));
-    if (dropdown == null) {
-        return false;
-    }
     try {
-        let test = dropdown.firstChild.firstChild;
+        let dropdown = document.querySelector(rolleIdDropdownSelectorN(0)).firstChild.firstChild.firstChild.firstChild;
     } catch(e){
         //Is not the expected node
         return false;
