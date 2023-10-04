@@ -11,13 +11,12 @@
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=netcompany.com
 // ==/UserScript==
 
-
-let saveButtonSelector = "#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button";
-let detailsButtonSelector = "#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1) > button";
+let saveButtonSelector = "#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button";
+let detailsButtonSelector = "#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1) > button";
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
 const rolleIdDropdownSelectorN = function (n) {
-    let childNum = 5;
+    let childNum = 6;
     switch (n) {
         case 0:
             break;
@@ -27,11 +26,11 @@ const rolleIdDropdownSelectorN = function (n) {
         default:
             childNum = childNum + 1 + (2 * (n - 1));
     }
-    return `#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(${childNum}) > div > div > div > div > div`;
+    return `#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(${childNum}) > div > div > div > div > div`;
 }
 
 const rolleIdHoursDropdownSelectorN = function (n) {
-    let childNum = 7;
+    let childNum = 8;
     switch (n) {
         case 0:
             throw new Error("rollIdHours 0 does not exist");
@@ -40,7 +39,7 @@ const rolleIdHoursDropdownSelectorN = function (n) {
         default:
             childNum = childNum + (2 * (n - 1));
     }
-    return `#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(${childNum}) > div > div > div > div`;
+    return `#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(${childNum}) > div > div > div > div`;
 }
 
 function waitForElm(selector) {
@@ -68,10 +67,10 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
     let rollIdDropdown = document.querySelector(rolleIdDropdownSelectorN(numRollId)).firstChild.firstChild;
 
     let isAlreadySelected = false;
-    isAlreadySelected = rollIdDropdown.firstChild.firstChild != null;
+    isAlreadySelected = rollIdDropdown.querySelector(".fa.fa-times") != null;
 
     if (isAlreadySelected) {
-        let selectedOptionRemoveButton = rollIdDropdown.firstChild.children.item(1).querySelector(".fa.fa-times");
+        let selectedOptionRemoveButton = rollIdDropdown.querySelector(".fa.fa-times");
         selectedOptionRemoveButton.click();
         await sleep(200);
     }
@@ -141,7 +140,7 @@ async function handleRollId(allRegistrations, isFirstIterationInRow) {
     await waitForElm(saveButtonSelector)
     let saveButton = document.querySelector(saveButtonSelector);
     saveButton.click();
-    while (document.querySelector(rolleIdDropdownSelectorN(0)) != null) {
+    while (document.querySelector(saveButtonSelector) != null) {
         await new Promise(r => setTimeout(r, 100));
     }
     return true;
@@ -153,7 +152,7 @@ async function startWait() {
         .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button ms-Button--commandBar ms-CommandBarItem-link root-234" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
 
     $("#gmCommDemo").click(async function () {
-        let year_week = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText,
+        let year_week = document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText,
             year = year_week.substr(7, 4), week = year_week.substr(4, 2),
             start_of_week = moment(year + "W" + week).format("YYYY-MM-DD"),
             end_of_week = moment(year + "W" + week).add(6, 'days').format("YYYY-MM-DD"),
@@ -178,7 +177,7 @@ async function startWait() {
             alert("Missing Authorization. Login to Timereg in another tab");
         }
 
-        var table = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table");
+        var table = document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table");
         var rowLength = table.rows.length;
         let deliveryHasMultipleRollIdsMap = new Map();
         // We don't care about the first rows, nor the last summing rows
@@ -234,7 +233,7 @@ async function startWait() {
                                     });
                                     detailsButton.dispatchEvent(evt);
                                     detailsButton.dispatchEvent(evt2);
-                                    await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div");
+                                    await waitForElm(saveButtonSelector);
                                     let hasRollId = await handleRollId(allRegistrations, firstIteration);
                                     if (firstIteration) {
                                         deliveryHasMultipleRollIdsMap.set(caseRegistration.CaseTitle, hasRollId);
