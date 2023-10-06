@@ -284,9 +284,9 @@ async function startWait() {
         if (!insertedSomething) {
             alert("Nothing was inserted, did you register anything during Week " + week + "?");
         } else {
-            // setTimeout(function() {
-            //     document.querySelector("#id__155").click()
-            // }, 1000);
+            setTimeout(function() {
+                document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button").click()
+            }, 1000);
         }
     });
 }
