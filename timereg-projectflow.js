@@ -12,7 +12,9 @@
 // ==/UserScript==
 
 let saveButtonSelector = "#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button";
+let closeDetailsButtonSelector = "#fluent-default-layer-host > div > div > div > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > button"
 let detailsButtonSelector = "#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1) > button";
+
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
 const rolleIdDropdownSelectorN = function (n) {
@@ -62,6 +64,26 @@ function waitForElm(selector) {
     });
 }
 
+function waitForSpecificElm(selector, element) {
+    return new Promise(resolve => {
+        if (element.querySelector(selector)) {
+            return resolve(element.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(() => {
+            if (element.querySelector(selector)) {
+                resolve(element.querySelector(selector));
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(element, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
+
 async function handleRolleIdDropdownAndHours(hours, numRollId) {
     console.log(`Called handleRollId with ${hours} hours and ${numRollId} nummrollid`);
     let rollIdDropdown = document.querySelector(rolleIdDropdownSelectorN(numRollId)).firstChild.firstChild;
@@ -80,7 +102,7 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
         hoursField.focus();
         hoursField.click();
         await sleep(100);
-        hoursField.value = hours;
+        hoursField.value = hours.toLocaleString('da-DK');
         const keyboardEvent = new KeyboardEvent('keydown', {
             code: 'Enter',
             key: 'Enter',
@@ -113,17 +135,22 @@ async function testIfWindowHasRollIdDropdown() {
     return true;
 }
 
+async function closeDetailsWindow() {
+    let saveButton = document.querySelector(saveButtonSelector);
+    if (saveButton.classList.contains('is-disabled')){
+        saveButton = document.querySelector(closeDetailsButtonSelector);
+    }
+    saveButton.click();
+    while (document.querySelector(saveButtonSelector) != null) {
+        await new Promise(r => setTimeout(r, 100));
+    }
+}
 async function handleRollId(allRegistrations, isFirstIterationInRow) {
 
     if (isFirstIterationInRow) {
         let hasRollIds = await testIfWindowHasRollIdDropdown();
         if (!hasRollIds) {
-            await waitForElm(saveButtonSelector)
-            let saveButton = document.querySelector(saveButtonSelector);
-            saveButton.click();
-            while (document.querySelector(saveButtonSelector) != null) {
-                await new Promise(r => setTimeout(r, 100));
-            }
+            await closeDetailsWindow();
             return false;
         }
     }
@@ -137,12 +164,7 @@ async function handleRollId(allRegistrations, isFirstIterationInRow) {
         currentRollId += 1;
     }
 
-    await waitForElm(saveButtonSelector)
-    let saveButton = document.querySelector(saveButtonSelector);
-    saveButton.click();
-    while (document.querySelector(saveButtonSelector) != null) {
-        await new Promise(r => setTimeout(r, 100));
-    }
+    await closeDetailsWindow();
     return true;
 }
 
@@ -204,17 +226,28 @@ async function startWait() {
 
                                 cell.focus();
                                 cell.click();
+                                await waitForSpecificElm('.FitUiControlInput', cell)
 
-                                const keyboardEvent = new KeyboardEvent('keydown', {
+
+                                const enterEvent = new KeyboardEvent('keydown', {
                                     code: 'Enter',
                                     key: 'Enter',
                                     charCode: 13,
                                     keyCode: 13,
                                     bubbles: true,
                                 });
-
-                                cell.lastChild.firstChild.firstChild.value = hourSum;
-                                cell.lastChild.firstChild.firstChild.dispatchEvent(keyboardEvent);
+                                const tabEvent = new KeyboardEvent('keydown', {
+                                    code: 'Tab',
+                                    key: 'Tab',
+                                    keyCode: 9,
+                                    bubbles: true,
+                                });
+                                let input = cell.lastChild.firstChild.firstChild;
+                                let ta = cell.lastChild.firstChild.querySelector('textarea');
+                                let inp = cell.lastChild.firstChild.querySelector('input[type="text"]');
+                                input.value = hourSum;
+                                input.dispatchEvent(enterEvent);
+                                input.dispatchEvent(tabEvent);
                                 insertedSomething = true;
 
                                 if (hasMoreRollIdsInTimereg && (firstIteration || deliveryHasMultipleRollIdsMap.get(caseRegistration.CaseTitle))) {
@@ -251,9 +284,9 @@ async function startWait() {
         if (!insertedSomething) {
             alert("Nothing was inserted, did you register anything during Week " + week + "?");
         } else {
-            setTimeout(function() {
-                document.querySelector("#id__155").click()
-            }, 1000);
+            // setTimeout(function() {
+            //     document.querySelector("#id__155").click()
+            // }, 1000);
         }
     });
 }
