@@ -1,11 +1,11 @@
 #### Prerequisites 
 - Use Timereg as your primary tool.
 - You must "Star" your cases in ProjectFlow.
-- Your Timereg cases must include the PSP numbers from ProjectFlow.
-- After pressing the button it may appear that entries are missing, but in most cases pressing "Gem" will solve it.
-- If you have multiple Kontraktrolle id's, it is assumed that there is a well-defined mapping between timereg and project flow where the top one in timereg corresponds to the top one in projectflow, etc
+    - Since this as of now does not work, you have to either manually add all of your activities before pressing the button, or if you have the same activities as last week, go to "Værktøjer" and select "Inkludér aktiviteter fra sidste uge" ![image](https://github.com/rasser900/timereg-projectflow/assets/15357249/3a20098d-8071-46f8-9eb5-e9d589d8e5eb)
 
-![image](https://github.com/rasser900/timereg-projectflow/assets/15357249/c6483828-61de-4416-8779-0185c0184da8)
+- Your Timereg cases must include the PSP numbers from ProjectFlow.
+- If you have multiple Kontraktrolle id's, it is assumed that there is a well-defined mapping between timereg and project flow where the top one in timereg corresponds to the top one in projectflow, etc
+    - ![image](https://github.com/rasser900/timereg-projectflow/assets/15357249/c6483828-61de-4416-8779-0185c0184da8)
 
 
 # How to install
