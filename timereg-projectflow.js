@@ -88,7 +88,7 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
     console.log(`Called handleRollId with ${hours} hours and ${numRollId} nummrollid`);
     let rollIdDropdown = document.querySelector(rolleIdDropdownSelectorN(numRollId)).firstChild.firstChild;
 
-    let isAlreadySelected = false;
+    let isAlreadySelected;
     isAlreadySelected = rollIdDropdown.querySelector(".fa.fa-times") != null;
 
     if (isAlreadySelected) {
@@ -169,7 +169,7 @@ async function handleRollId(allRegistrations, isFirstIterationInRow) {
 }
 
 async function startWait() {
-    const elm = await waitForElm('.pfx-weeksheet .body-227 .root-228 .primarySet-209');
+    await waitForElm('.pfx-weeksheet .body-227 .root-228 .primarySet-209');
     $('.pfx-weeksheet .body-227 .root-228 .primarySet-209')
         .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button ms-Button--commandBar ms-CommandBarItem-link root-234" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
 
@@ -243,8 +243,6 @@ async function startWait() {
                                     bubbles: true,
                                 });
                                 let input = cell.lastChild.firstChild.firstChild;
-                                let ta = cell.lastChild.firstChild.querySelector('textarea');
-                                let inp = cell.lastChild.firstChild.querySelector('input[type="text"]');
                                 input.value = hourSum;
                                 input.dispatchEvent(enterEvent);
                                 input.dispatchEvent(tabEvent);
