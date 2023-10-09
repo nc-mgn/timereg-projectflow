@@ -203,7 +203,7 @@ async function startWait() {
         var rowLength = table.rows.length;
         let deliveryHasMultipleRollIdsMap = new Map();
         // We don't care about the first rows, nor the last summing rows
-        for (var i = 3; i < rowLength - 3; i += 1) {
+        for (var i = 3; i < rowLength - 2; i += 1) {
             var row = table.rows[i];
             var projectFlowPsp = row.cells[2].innerText.substr(3, 10);
 
