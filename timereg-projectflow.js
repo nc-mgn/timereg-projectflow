@@ -4,20 +4,21 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://ufst.projectflow365.com/*
 // @grant        GM_xmlhttpRequest
-// @version      0.6
+// @version      0.7
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=netcompany.com
 // ==/UserScript==
 
+let saveButtonSelector = "#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button";
+let closeDetailsButtonSelector = "#fluent-default-layer-host > div > div > div > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > button"
+let detailsButtonSelector = "#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1) > button";
 
-let saveButtonSelector = "#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button";
-let detailsButtonSelector = "#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1) > button";
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
 const rolleIdDropdownSelectorN = function (n) {
-    let childNum = 5;
+    let childNum = 6;
     switch (n) {
         case 0:
             break;
@@ -27,11 +28,11 @@ const rolleIdDropdownSelectorN = function (n) {
         default:
             childNum = childNum + 1 + (2 * (n - 1));
     }
-    return `#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(${childNum}) > div > div > div > div > div`;
+    return `#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(${childNum}) > div > div > div > div > div`;
 }
 
 const rolleIdHoursDropdownSelectorN = function (n) {
-    let childNum = 7;
+    let childNum = 8;
     switch (n) {
         case 0:
             throw new Error("rollIdHours 0 does not exist");
@@ -40,7 +41,7 @@ const rolleIdHoursDropdownSelectorN = function (n) {
         default:
             childNum = childNum + (2 * (n - 1));
     }
-    return `#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(${childNum}) > div > div > div > div`;
+    return `#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(${childNum}) > div > div > div > div`;
 }
 
 function waitForElm(selector) {
@@ -63,15 +64,35 @@ function waitForElm(selector) {
     });
 }
 
+function waitForSpecificElm(selector, element) {
+    return new Promise(resolve => {
+        if (element.querySelector(selector)) {
+            return resolve(element.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(() => {
+            if (element.querySelector(selector)) {
+                resolve(element.querySelector(selector));
+                observer.disconnect();
+            }
+        });
+
+        observer.observe(element, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
+
 async function handleRolleIdDropdownAndHours(hours, numRollId) {
     console.log(`Called handleRollId with ${hours} hours and ${numRollId} nummrollid`);
     let rollIdDropdown = document.querySelector(rolleIdDropdownSelectorN(numRollId)).firstChild.firstChild;
 
-    let isAlreadySelected = false;
-    isAlreadySelected = rollIdDropdown.firstChild.firstChild != null;
+    let isAlreadySelected;
+    isAlreadySelected = rollIdDropdown.querySelector(".fa.fa-times") != null;
 
     if (isAlreadySelected) {
-        let selectedOptionRemoveButton = rollIdDropdown.firstChild.children.item(1).querySelector(".fa.fa-times");
+        let selectedOptionRemoveButton = rollIdDropdown.querySelector(".fa.fa-times");
         selectedOptionRemoveButton.click();
         await sleep(200);
     }
@@ -81,7 +102,7 @@ async function handleRolleIdDropdownAndHours(hours, numRollId) {
         hoursField.focus();
         hoursField.click();
         await sleep(100);
-        hoursField.value = hours;
+        hoursField.value = hours.toLocaleString('da-DK');
         const keyboardEvent = new KeyboardEvent('keydown', {
             code: 'Enter',
             key: 'Enter',
@@ -114,17 +135,22 @@ async function testIfWindowHasRollIdDropdown() {
     return true;
 }
 
+async function closeDetailsWindow() {
+    let saveButton = document.querySelector(saveButtonSelector);
+    if (saveButton.classList.contains('is-disabled')){
+        saveButton = document.querySelector(closeDetailsButtonSelector);
+    }
+    saveButton.click();
+    while (document.querySelector(saveButtonSelector) != null) {
+        await new Promise(r => setTimeout(r, 100));
+    }
+}
 async function handleRollId(allRegistrations, isFirstIterationInRow) {
 
     if (isFirstIterationInRow) {
         let hasRollIds = await testIfWindowHasRollIdDropdown();
         if (!hasRollIds) {
-            await waitForElm(saveButtonSelector)
-            let saveButton = document.querySelector(saveButtonSelector);
-            saveButton.click();
-            while (document.querySelector(saveButtonSelector) != null) {
-                await new Promise(r => setTimeout(r, 100));
-            }
+            await closeDetailsWindow();
             return false;
         }
     }
@@ -138,22 +164,17 @@ async function handleRollId(allRegistrations, isFirstIterationInRow) {
         currentRollId += 1;
     }
 
-    await waitForElm(saveButtonSelector)
-    let saveButton = document.querySelector(saveButtonSelector);
-    saveButton.click();
-    while (document.querySelector(rolleIdDropdownSelectorN(0)) != null) {
-        await new Promise(r => setTimeout(r, 100));
-    }
+    await closeDetailsWindow();
     return true;
 }
 
 async function startWait() {
-    const elm = await waitForElm('.pfx-weeksheet .body-227 .root-228 .primarySet-209');
+    await waitForElm('.pfx-weeksheet .body-227 .root-228 .primarySet-209');
     $('.pfx-weeksheet .body-227 .root-228 .primarySet-209')
         .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button ms-Button--commandBar ms-CommandBarItem-link root-234" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
 
     $("#gmCommDemo").click(async function () {
-        let year_week = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText,
+        let year_week = document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText,
             year = year_week.substr(7, 4), week = year_week.substr(4, 2),
             start_of_week = moment(year + "W" + week).format("YYYY-MM-DD"),
             end_of_week = moment(year + "W" + week).add(6, 'days').format("YYYY-MM-DD"),
@@ -178,11 +199,11 @@ async function startWait() {
             alert("Missing Authorization. Login to Timereg in another tab");
         }
 
-        var table = document.querySelector("#cfx-app-268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table");
+        var table = document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table");
         var rowLength = table.rows.length;
         let deliveryHasMultipleRollIdsMap = new Map();
         // We don't care about the first rows, nor the last summing rows
-        for (var i = 3; i < rowLength - 3; i += 1) {
+        for (var i = 3; i < rowLength - 2; i += 1) {
             var row = table.rows[i];
             var projectFlowPsp = row.cells[2].innerText.substr(3, 10);
 
@@ -205,17 +226,26 @@ async function startWait() {
 
                                 cell.focus();
                                 cell.click();
+                                await waitForSpecificElm('.FitUiControlInput', cell)
 
-                                const keyboardEvent = new KeyboardEvent('keydown', {
+
+                                const enterEvent = new KeyboardEvent('keydown', {
                                     code: 'Enter',
                                     key: 'Enter',
                                     charCode: 13,
                                     keyCode: 13,
                                     bubbles: true,
                                 });
-
-                                cell.lastChild.firstChild.firstChild.value = hourSum;
-                                cell.lastChild.firstChild.firstChild.dispatchEvent(keyboardEvent);
+                                const tabEvent = new KeyboardEvent('keydown', {
+                                    code: 'Tab',
+                                    key: 'Tab',
+                                    keyCode: 9,
+                                    bubbles: true,
+                                });
+                                let input = cell.lastChild.firstChild.firstChild;
+                                input.value = hourSum;
+                                input.dispatchEvent(enterEvent);
+                                input.dispatchEvent(tabEvent);
                                 insertedSomething = true;
 
                                 if (hasMoreRollIdsInTimereg && (firstIteration || deliveryHasMultipleRollIdsMap.get(caseRegistration.CaseTitle))) {
@@ -234,7 +264,7 @@ async function startWait() {
                                     });
                                     detailsButton.dispatchEvent(evt);
                                     detailsButton.dispatchEvent(evt2);
-                                    await waitForElm("#cfx-app-7f639013-79d8-4f28-9369-10aed9451fd3-inner > div.cfx-app-body > div.data-form-module_dataformContainer_JZ7Dk > div > div > div:nth-child(5) > div > div");
+                                    await waitForElm(saveButtonSelector);
                                     let hasRollId = await handleRollId(allRegistrations, firstIteration);
                                     if (firstIteration) {
                                         deliveryHasMultipleRollIdsMap.set(caseRegistration.CaseTitle, hasRollId);
@@ -253,7 +283,7 @@ async function startWait() {
             alert("Nothing was inserted, did you register anything during Week " + week + "?");
         } else {
             setTimeout(function() {
-                document.querySelector("#id__155").click()
+                document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button").click()
             }, 1000);
         }
     });
