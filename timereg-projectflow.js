@@ -4,7 +4,7 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://ufst.projectflow365.com/*
 // @grant        GM_xmlhttpRequest
-// @version      0.7
+// @version      0.8
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
@@ -168,6 +168,14 @@ async function handleRollId(allRegistrations, isFirstIterationInRow) {
     return true;
 }
 
+function containsNonNumeric(string) {
+    // The regex \D matches any character that's not a digit
+    var nonNumericRegex = /\D/;
+
+    // The test() method tests for a match in a string
+    return nonNumericRegex.test(string);
+}
+
 async function startWait() {
     await waitForElm('.pfx-weeksheet .body-227 .root-228 .primarySet-209');
     $('.pfx-weeksheet .body-227 .root-228 .primarySet-209')
@@ -206,9 +214,11 @@ async function startWait() {
         for (var i = 3; i < rowLength - 2; i += 1) {
             var row = table.rows[i];
             var projectFlowPsp = row.cells[2].innerText.substr(3, 10);
+            if (containsNonNumeric(projectFlowPsp)) continue;
+            if (projectFlowPsp.trim() === '') continue;
 
-            for (let delievery of responseJson.RegistrationsGroups) {
-                for (let caseRegistration of delievery.CaseRegistrations) {
+            for (let delivery of responseJson.RegistrationsGroups) {
+                for (let caseRegistration of delivery.CaseRegistrations) {
                     if (caseRegistration.CaseTitle.includes(projectFlowPsp)) {
                         var cellDayStartIndex = 7;
                         let firstIteration = true;
@@ -224,6 +234,7 @@ async function startWait() {
                             if (hourSum > 0) {
                                 var cell = row.cells[cellDayStartIndex];
 
+                                if (cell.querySelector(".ms-Icon") != null) continue;
                                 cell.focus();
                                 cell.click();
                                 await waitForSpecificElm('.FitUiControlInput', cell)
@@ -247,7 +258,6 @@ async function startWait() {
                                 input.dispatchEvent(enterEvent);
                                 input.dispatchEvent(tabEvent);
                                 insertedSomething = true;
-
                                 if (hasMoreRollIdsInTimereg && (firstIteration || deliveryHasMultipleRollIdsMap.get(caseRegistration.CaseTitle))) {
                                     cell.focus();
                                     cell.click();
