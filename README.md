@@ -9,7 +9,10 @@
 
 
 # How to install
-1. First install extension Tampermonkey (https://www.tampermonkey.net/) 
+1. First install the browser extension Tampermonkey (https://www.tampermonkey.net/)
+1. Make sure Tampermonkey is pinned to toolbar
+  ![image](README/Chrome/Manage_Extensions.PNG)
+  ![image](README/Chrome/Manage_Extensions_Tampermonkey.PNG)
 1. Go Dashboard
   ![image](https://github.com/nc-mgn/timereg-projectflow/assets/30721123/d179ab9e-c7d7-4eac-b9b9-99ee9e790614)
 1. Press Utilities and Import from URL (URL https://raw.githubusercontent.com/nc-mgn/timereg-projectflow/main/timereg-projectflow.js)
