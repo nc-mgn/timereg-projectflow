@@ -4,7 +4,7 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://ufst.projectflow365.com/*
 // @grant        GM_xmlhttpRequest
-// @version      0.8
+// @version      0.9
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
@@ -210,6 +210,7 @@ async function startWait() {
         var table = document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table");
         var rowLength = table.rows.length;
         let deliveryHasMultipleRollIdsMap = new Map();
+        let notClosedTimeregDeliveries = []
         // We don't care about the first rows, nor the last summing rows
         for (var i = 3; i < rowLength - 2; i += 1) {
             var row = table.rows[i];
@@ -224,7 +225,11 @@ async function startWait() {
                         let firstIteration = true;
                         for (let registrations of caseRegistration.Registrations) {
                             let allRegistrations = []
+                            let isTimeregClosed = true
                             for (let i = 0; i < registrations.Registrations.length; i++) {
+                                if (registrations.Registrations[i].IsClosed !== true) {
+                                    isTimeregClosed = false
+                                }
                                 allRegistrations[i] = registrations.Registrations[i].Hours;
                             }
 
@@ -232,6 +237,10 @@ async function startWait() {
                             let hourSum = hasMoreRollIdsInTimereg ? allRegistrations.reduce((a, b) => a + b) : allRegistrations[0];
 
                             if (hourSum > 0) {
+                                if (!isTimeregClosed) {
+                                    notClosedTimeregDeliveries.push(caseRegistration.CaseTitle + " on " + registrations.Registrations[0].Date.substring(0,10))
+                                    continue
+                                }
                                 var cell = row.cells[cellDayStartIndex];
 
                                 if (cell.querySelector(".ms-Icon") != null) continue;
@@ -288,7 +297,9 @@ async function startWait() {
                 }
             }
         }
-
+        if(notClosedTimeregDeliveries.length > 0) {
+            alert('Some deliveries are not closed in timereg and thus not filled out.\nPlease close the following deliveries in timereg before using this tool: \n' + notClosedTimeregDeliveries.join('\n'))
+        }
         if (!insertedSomething) {
             alert("Nothing was inserted, did you register anything during Week " + week + "?");
         } else {
