@@ -2,7 +2,7 @@
 // @name         Fill projectflow from timereg
 // @namespace    http://netcompany.com/
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
-// @match        https://ufst.projectflow365.com/*
+// @match        https://iut.ccta.dk/*
 // @grant        GM_xmlhttpRequest
 // @version      0.9
 // @connect      timereg.netcompany.com
