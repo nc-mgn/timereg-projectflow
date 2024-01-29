@@ -18,6 +18,6 @@
 1. Press Utilities and Import from URL (URL https://raw.githubusercontent.com/nc-mgn/timereg-projectflow/main/timereg-projectflow.js)
   ![image](https://github.com/nc-mgn/timereg-projectflow/assets/30721123/f1d51677-09e4-4629-a952-691b7b57f411)
 1. Press Install
-1. Go to https://ufst.projectflow365.com
+1. Go to https://iut.ccta.dk
 1. A new button has appeared
   ![image](https://github.com/nc-mgn/timereg-projectflow/assets/30721123/c808b1f9-ef2a-4c3d-8c50-3a4ba7c1bd70)
