@@ -4,7 +4,7 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://iut.ccta.dk/*
 // @grant        GM_xmlhttpRequest
-// @version      0.9.2
+// @version      0.9.3
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
@@ -184,7 +184,7 @@ async function startWait() {
     $("#gmCommDemo").click(async function () {
         let year_week = document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText,
             year = /\s(\d{4})\s/.exec(year_week)[1],
-            week = /\s(\d{1,2})\s/.exec(year_week)[1].length = 1 ? "0"+/\s(\d{1,2})\s/.exec(year_week)[1] : /\s(\d{1,2})\s/.exec(year_week)[1],
+            week = /\s(\d{1,2})\s/.exec(year_week)[1].length == 1 ? "0"+/\s(\d{1,2})\s/.exec(year_week)[1] : /\s(\d{1,2})\s/.exec(year_week)[1],
             start_of_week = moment(year + "W" + week).format("YYYY-MM-DD"),
             end_of_week = moment(year + "W" + week).add(6, 'days').format("YYYY-MM-DD"),
             fetchUrl = "https://timereg.netcompany.com/api/Registration/GetRegistrations?startDate=" + start_of_week + "&endDate=" + end_of_week,
