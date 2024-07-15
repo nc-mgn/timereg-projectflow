@@ -179,7 +179,7 @@ function containsNonNumeric(string) {
 async function startWait() {
     await waitForElm('.pfx-weeksheet .root-163 .primarySet-144');
     $('.pfx-weeksheet .root-163 .primarySet-144')
-        .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button ms-Button--commandBar ms-CommandBarItem-link root-234" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
+        .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button-flexContainer flexContainer-148" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
 
     $("#gmCommDemo").click(async function () {
         let year_week = document.querySelector("#cfx-app-PFX_Portal_TimeReg--3d8eb2e0-3e0f-40b7-af1d-f38b378388c2-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText,
