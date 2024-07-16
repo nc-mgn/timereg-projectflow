@@ -4,16 +4,16 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://iut.ccta.dk/*
 // @grant        GM_xmlhttpRequest
-// @version      0.9.3
+// @version      0.9.4
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=netcompany.com
 // ==/UserScript==
 
-let saveButtonSelector = "#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button";
+let saveButtonSelector = "#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-144 > div:nth-child(2) > button";
 let closeDetailsButtonSelector = "#fluent-default-layer-host > div > div > div > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > button"
-let detailsButtonSelector = "#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-244 > div:nth-child(1) > button";
+let detailsButtonSelector = "#cfx-app-PFX_Portal_TimeReg--3d8eb2e0-3e0f-40b7-af1d-f38b378388c2-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-179 > div:nth-child(1) > button";
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
@@ -177,12 +177,12 @@ function containsNonNumeric(string) {
 }
 
 async function startWait() {
-    await waitForElm('.pfx-weeksheet .body-227 .root-228 .primarySet-209');
-    $('.pfx-weeksheet .body-227 .root-228 .primarySet-209')
-        .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button ms-Button--commandBar ms-CommandBarItem-link root-234" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
+    await waitForElm('.pfx-weeksheet .root-163 .primarySet-144');
+    $('.pfx-weeksheet .root-163 .primarySet-144')
+        .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button-flexContainer flexContainer-148" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
 
     $("#gmCommDemo").click(async function () {
-        let year_week = document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText,
+        let year_week = document.querySelector("#cfx-app-PFX_Portal_TimeReg--3d8eb2e0-3e0f-40b7-af1d-f38b378388c2-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText,
             year = /\s(\d{4})\s/.exec(year_week)[1],
             week = /\s(\d{1,2})\s/.exec(year_week)[1].length == 1 ? "0"+/\s(\d{1,2})\s/.exec(year_week)[1] : /\s(\d{1,2})\s/.exec(year_week)[1],
             start_of_week = moment(year + "W" + week).format("YYYY-MM-DD"),
@@ -208,7 +208,7 @@ async function startWait() {
             alert("Missing Authorization. Login to Timereg in another tab");
         }
 
-        var table = document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div.cfx-app-body > div:nth-child(2) > div > div > table");
+        var table = document.querySelector("#cfx-app-PFX_Portal_TimeReg--3d8eb2e0-3e0f-40b7-af1d-f38b378388c2-inner > div.cfx-app-body > div:nth-child(2) > div > div > table");
         var rowLength = table.rows.length;
         let deliveryHasMultipleRollIdsMap = new Map();
         let notClosedTimeregDeliveries = []
@@ -305,7 +305,7 @@ async function startWait() {
             alert("Nothing was inserted, did you register anything during Week " + week + "?");
         } else {
             setTimeout(function() {
-                document.querySelector("#cfx-app-PFX_Portal_TimeReg--268dadb0-6ea1-4a79-9259-0ec377f1c750-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-209 > div:nth-child(2) > button").click()
+                document.querySelector("#cfx-app-PFX_Portal_TimeReg--3d8eb2e0-3e0f-40b7-af1d-f38b378388c2-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-144 > div:nth-child(2) > button").click()
             }, 1000);
         }
     });
