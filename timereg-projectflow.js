@@ -4,16 +4,16 @@
 // @description  Adds a button to ProjectFlow365 that will import registrations from Timereg
 // @match        https://iut.ccta.dk/*
 // @grant        GM_xmlhttpRequest
-// @version      0.9.4
+// @version      0.9.6
 // @connect      timereg.netcompany.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=netcompany.com
 // ==/UserScript==
 
-let saveButtonSelector = "#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-144 > div:nth-child(2) > button";
+let saveButtonSelector = "#cfx-app-PFX_TimeReg_MetaData--7f639013-79d8-4f28-9369-10aed9451fd3-inner > div:nth-child(2) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-145 > div:nth-child(2) > button";
 let closeDetailsButtonSelector = "#fluent-default-layer-host > div > div > div > div > div:nth-child(2) > div:nth-child(2) > div > div:nth-child(1) > div > button"
-let detailsButtonSelector = "#cfx-app-PFX_Portal_TimeReg--3d8eb2e0-3e0f-40b7-af1d-f38b378388c2-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-179 > div:nth-child(1) > button";
+let detailsButtonSelector = "#cfx-app-PFX_Portal_TimeReg--3d8eb2e0-3e0f-40b7-af1d-f38b378388c2-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-secondaryCommand.secondarySet-180 > div:nth-child(1) > button";
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
 
@@ -169,17 +169,14 @@ async function handleRollId(allRegistrations, isFirstIterationInRow) {
 }
 
 function containsNonNumeric(string) {
-    // The regex \D matches any character that's not a digit
     var nonNumericRegex = /\D/;
-
-    // The test() method tests for a match in a string
     return nonNumericRegex.test(string);
 }
 
 async function startWait() {
-    await waitForElm('.pfx-weeksheet .root-163 .primarySet-144');
-    $('.pfx-weeksheet .root-163 .primarySet-144')
-        .append('<div class="ms-OverflowSet-item item-210" role="none"><button id="gmCommDemo" class="ms-Button-flexContainer flexContainer-148" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
+    await waitForElm('.pfx-weeksheet .root-164 .primarySet-145');
+    $('.pfx-weeksheet .root-164 .primarySet-145')
+        .append('<div class="ms-OverflowSet-item item-211" role="none"><button id="gmCommDemo" class="ms-Button-flexContainer flexContainer-149" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
 
     $("#gmCommDemo").click(async function () {
         let year_week = document.querySelector("#cfx-app-PFX_Portal_TimeReg--3d8eb2e0-3e0f-40b7-af1d-f38b378388c2-inner > div.cfx-app-body > div:nth-child(2) > div > div > table > thead > tr.datagrid-module_DataGridGroupHeader_O0qMs > th:nth-child(3)").innerText,
@@ -212,7 +209,6 @@ async function startWait() {
         var rowLength = table.rows.length;
         let deliveryHasMultipleRollIdsMap = new Map();
         let notClosedTimeregDeliveries = []
-        // We don't care about the first rows, nor the last summing rows
         for (var i = 3; i < rowLength - 2; i += 1) {
             var row = table.rows[i];
             var projectFlowPsp = row.cells[2].innerText.substr(3, 10);
@@ -222,7 +218,7 @@ async function startWait() {
             for (let delivery of responseJson.RegistrationsGroups) {
                 for (let caseRegistration of delivery.CaseRegistrations) {
                     if (caseRegistration.CaseTitle.includes(projectFlowPsp)) {
-                        var cellDayStartIndex = 7;
+                        var cellDayStartIndex = 6;
                         let firstIteration = true;
                         for (let registrations of caseRegistration.Registrations) {
                             let allRegistrations = []
@@ -244,7 +240,11 @@ async function startWait() {
                                 }
                                 var cell = row.cells[cellDayStartIndex];
 
-                                if (cell.querySelector(".ms-Icon") != null) continue;
+                                if (cell.querySelector(".ms-Icon") != null) {
+                                    cellDayStartIndex += 1;
+                                    continue;
+                                }
+
                                 cell.focus();
                                 cell.click();
                                 await waitForSpecificElm('.FitUiControlInput', cell)
@@ -304,8 +304,8 @@ async function startWait() {
         if (!insertedSomething) {
             alert("Nothing was inserted, did you register anything during Week " + week + "?");
         } else {
-            setTimeout(function() {
-                document.querySelector("#cfx-app-PFX_Portal_TimeReg--3d8eb2e0-3e0f-40b7-af1d-f38b378388c2-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-144 > div:nth-child(2) > button").click()
+            setTimeout(function () {
+                document.querySelector("#cfx-app-PFX_Portal_TimeReg--3d8eb2e0-3e0f-40b7-af1d-f38b378388c2-inner > div:nth-child(4) > div > div > div > div > div > div.ms-OverflowSet.ms-CommandBar-primaryCommand.primarySet-145 > div:nth-child(2) > button").click()
             }, 1000);
         }
     });
