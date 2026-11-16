@@ -174,8 +174,8 @@ function containsNonNumeric(string) {
 }
 
 async function startWait() {
-    await waitForElm('.pfx-weeksheet .root-164 .primarySet-145');
-    $('.pfx-weeksheet .root-164 .primarySet-145')
+    await waitForElm('.pfx-weeksheet .root-173 .primarySet-155');
+    $('.pfx-weeksheet .root-173 .primarySet-155')
         .append('<div class="ms-OverflowSet-item item-211" role="none"><button id="gmCommDemo" class="ms-Button-flexContainer flexContainer-149" tabindex="0">Fill ProjectFlow from Timereg</button></div>');
 
     $("#gmCommDemo").click(async function () {
